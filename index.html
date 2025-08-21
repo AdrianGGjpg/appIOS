@@ -194,8 +194,8 @@
 
 <script type="module">
   /* ====== pdf.js autohospedado ====== */
-  import * as pdfjsLib from "./lib/pdfjs/pdf.mjs";
-  pdfjsLib.GlobalWorkerOptions.workerSrc = "./lib/pdfjs/pdf.worker.mjs";
+  import * as pdfjsLib from "./lib/pdfjs/pdf.js";
+  pdfjsLib.GlobalWorkerOptions.workerSrc = "./lib/pdfjs/pdf.worker.js";
 
   /* ====== Service Worker (PWA) ====== */
   if ("serviceWorker" in navigator) {
