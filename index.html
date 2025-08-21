@@ -351,29 +351,41 @@
     if(!state.currentId && state.docs.length){ selectDoc(state.docs[0].id); }
   }
 
-  async function selectDoc(id){
-    state.currentId = id; state.pageLinesCache.clear();
-    renderDocList(); resetViewer(); btnProcess.disabled = !getCurrentDoc(); if(!getCurrentDoc()) return;
+async function selectDoc(id){
+  state.currentId = id;
+  state.pageLinesCache.clear();
+  renderDocList();
+  resetViewer();
+  btnProcess.disabled = !getCurrentDoc();
+  if(!getCurrentDoc()) return;
 
-    const doc = getCurrentDoc();
-    if (!doc.bytes){
-      const rec = await DB.get("documents", doc.id);
-      if (!rec || !rec.bytes){ info.textContent="No se encontraron los datos en caché."; return; }
-      doc.bytes = await rec.bytes.arrayBuffer(); doc.size = rec.size||doc.size; doc.cached=true;
-    }
-    const bm = await DB.get("bookmarks", doc.id);
-    if (bm) doc.bookmarks = deserializeBookmarks(bm);
-
-    info.textContent = `Cargando ${doc.name}…`;
-    state.pdf = await pdfjsLib.getDocument({ data: doc.bytes }).promise;
-    state.totalPages = state.pdf.numPages;
-
-    const initial = clamp(parseInt(initialNInp.value||"5",10),1,state.totalPages);
-    for(let i=1;i<=initial;i++){ await appendPage(i); }
-    ensureObserver(); refreshFooter();
-    info.textContent = `Listo. Mostradas ${state.loadedPages}/${state.totalPages}.`;
-    renderBmList();
+  const doc = getCurrentDoc();
+  if (!doc.bytes){
+    const rec = await DB.get("documents", doc.id);
+    if (!rec || !rec.bytes){ info.textContent="No se encontraron los datos en caché."; return; }
+    doc.bytes = await rec.bytes.arrayBuffer();
+    doc.size = rec.size||doc.size;
+    doc.cached=true;
   }
+
+  const bm = await DB.get("bookmarks", doc.id);
+  if (bm) doc.bookmarks = deserializeBookmarks(bm);
+
+  info.textContent = `Cargando ${doc.name}…`;
+
+  state.pdf = await pdfjsLib.getDocument({ 
+    data: new Uint8Array(doc.bytes),     // 👈 aquí ya pasamos Uint8Array directo
+    cMapUrl: "./lib/pdfjs/cmaps/",
+    cMapPacked: true,
+    standardFontDataUrl: "./lib/pdfjs/standard_fonts/"
+  }).promise;
+
+  state.totalPages = state.pdf.numPages;
+
+  // 👇 en vez de esperar a que el usuario pulse, procesamos ya
+  btnProcess.click();
+}
+
 
   function getCurrentDoc(){ return state.docs.find(d=>d.id===state.currentId)||null; }
 
