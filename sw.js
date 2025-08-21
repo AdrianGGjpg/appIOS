@@ -4,8 +4,8 @@ const APP_SHELL = [
   "./",
   "./index.html",
   "./manifest.webmanifest",
-  "./lib/pdfjs/pdf.mjs",
-  "./lib/pdfjs/pdf.worker.mjs",
+  "./lib/pdfjs/pdf.js",
+  "./lib/pdfjs/pdf.worker.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/apple-touch-icon.png"
