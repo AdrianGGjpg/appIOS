@@ -1,5 +1,5 @@
 // sw.js
-const CACHE_NAME = "pdf-reader-shell-v1";
+const CACHE_NAME = "pdf-reader-shell-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
